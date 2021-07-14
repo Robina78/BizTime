@@ -7,7 +7,7 @@ const router = new express.Router();
 router.get('/', async (req, res, next) => {
     try {
         const result = await db.query(`SELECT code, name FROM companies ORDER BY name`);
-        print(result)
+        console.log(result)
         return res.json({ "companies": result.rows });
     } catch(e) {
         return next(e);
@@ -35,7 +35,7 @@ router.get('/:code', async (req, res, next) => {
         company.invoices = invoices.map(inv => inv.id);
 
         return res.send({ "company": company})
-        
+
     } catch (e) {
         return next(e)
     }
