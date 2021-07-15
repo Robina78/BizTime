@@ -6,8 +6,7 @@ const router = new express.Router();
 
 router.get('/', async (req, res, next) => {
     try {
-        const result = await db.query(`SELECT code, name FROM companies ORDER BY name`);
-        console.log(result)
+        const result = await db.query(`SELECT code, name, description FROM companies ORDER BY name`);        
         return res.json({ "companies": result.rows });
     } catch(e) {
         return next(e);
@@ -34,28 +33,28 @@ router.get('/:code', async (req, res, next) => {
 
         company.invoices = invoices.map(inv => inv.id);
 
-        return res.send({ "company": company})
+        return res.send({ "company": company});
 
     } catch (e) {
-        return next(e)
+        return next(e);
     }
-})
+});
 
 router.post('/', async (req, res, next) => {
     try {
-        const { name, description} = req.body;
+        const {name, description} = req.body;
         let code = slugify(name, {lower: true});
-
+       
         const result = await db.query(
             `INSERT INTO companies (code, name, description) 
             VALUES ($1, $2, $3) RETURNING code, name, description`, 
             [code, name, description]);
 
-            return res.status(201).json({ "company": result.rows[0] })
+            return res.status(201).json({ "company": result.rows[0] });
     } catch (e) {
         return next (e);
     }
-})
+});
 
 router.put('/:code', async (req, res, next) => {
     try {
@@ -68,9 +67,9 @@ router.put('/:code', async (req, res, next) => {
                     [name, description, code]);
 
         if (result.rows.length === 0) {
-            throw new ExpressError(`Can't update companies with code of ${code}`, 404)
+            throw new ExpressError(`Can't update companies with code of ${code}`, 404);
         } 
-        return res.send({ "company": result.rows[0] })                   
+        return res.send({ "company": result.rows[0] });                   
     } catch (e) {
         return next(e);
     }
@@ -85,12 +84,12 @@ router.delete('/:code', async (req, res, next) => {
              [req.params.code]);
         
         if (result.rows.length == 0) {
-            throw new ExpressError(`No such company: ${code}`, 404)
+            throw new ExpressError(`No such company: ${code}`, 404);
         }    
         return res.json({ "status": "deleted" });
 
     } catch (e) {
-        return next (e)
+        return next (e);
     }
 });
 
